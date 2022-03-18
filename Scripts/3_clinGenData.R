@@ -23,22 +23,25 @@ variantes_pacientes <- data.frame(unique(nombre))
 #####################################################################################
 
 setwd("~/Documentos/Olavide/TFM/Descargar")
-fileFechas <- data.frame(read.table('fileDate2.tsv', header = F, sep = '\t'))
-names(fileFechas) <- c('id2', 'filename', 'fecha', 'size', 'trash') # Si importo directamente del tsv que crea el fileDate.sh, añadir el name 'trash', y luego hacerla NULL
+fileFechas <- data.frame(read.table('fileDate.tsv', header = F, sep = '\t'))
+# After importing fileDate.tsv, naming columns, and deleting the fifth one:
+names(fileFechas) <- c('id2', 'filename', 'fecha', 'size', 'trash')
 fileFechas$trash <- NULL
-fileFechas <- fileFechas[grep('oxoG', fileFechas$filename),] # Nos quedamos sólo con los ficheros de interés
-fileFechas <- fileFechas[order(fileFechas$filename, -abs(fileFechas$size)),] # ordenamos por nombre y por tamaño descendente.
-fileFechas <- fileFechas[!duplicated(fileFechas$filename),] # Eliminamos los duplicados, y nos quedamos con los de fecha más antigua
-# Ahora vamos a crear un campo con el identificador del paciente:
+fileFechas <- fileFechas[grep('oxoG', fileFechas$filename),] # In the imported dataframe, keep only the files of interest:
+fileFechas <- fileFechas[order(fileFechas$filename, -abs(fileFechas$size)),] # Sorting by filename and descending size.
+fileFechas <- fileFechas[!duplicated(fileFechas$filename),] # When duplicates are deleted, only those with the oldest date are kept.
+# Creating a column with patient ids:
 fileFechas$patient <- sapply(fileFechas$filename, function(i){
   unlist(strsplit(i, '_'))[1]
 })
-fileFechas <- fileFechas[order(fileFechas$patient, abs(fileFechas$fecha)),] # Ordenamos ahora por nombre de paciente y por fecha ascendente
-fileFechas <- fileFechas[!duplicated(fileFechas$patient),] # Nos quedamos con la fecha más antigua
-# Y ahora, convertimos los nombres de los ficheros vcf en csv, que es como los tengo con las variantes.
+fileFechas <- fileFechas[order(fileFechas$patient, abs(fileFechas$fecha)),] # Now sorting by patient id and ascending date.
+fileFechas <- fileFechas[!duplicated(fileFechas$patient),] # Keeping the earliest date.
+# Changing the vcf extensions to csv.
 fileFechas$filename <- sub('.vcf$', '.csv', fileFechas$filename)
-# Y con este dataframe ya puedo seguir trabajando, sin el problema de los pacientes duplicados.
-# Contiene el nombre de los csv corresondientes a los vcf de mayor tamaño y con fecha más antigua (en el campo ##fileDate=)
+
+# Problem of duplicate patients has been solved.
+# The dataframe contains the name of the csv corresponding to the original vcf files 
+# of larger size and older date in the ##fileDate field.
 ############################################################################################################
 setwd("~/Documentos/Olavide/TFM/Variantes_estudio")
 variantes_pacientes <- data.frame()
@@ -55,14 +58,14 @@ variantes_pacientes$Paciente <- sapply(variantes_pacientes$Muestra, function(i){
   unlist(strsplit(i, '_'))[1]
 })
 row.names(variantes_pacientes) <- NULL
-####P PASO 4 ####
+
 ######################################################################################################
-## PROCESAMOS AHORA LOS CSV CON DATOS CLÍNICOS Y DE SEGUIMIENTO, PARA CONSEGUIR UN SÓLO DATAFRAME QUE
-## MEZCLAREMOS CON EL DE LOS DATOS DE VARIANTES.
-## Los datos clínicos proceden de la base de datos TCGA_CLINICAL_PRAD_DATA.ods del estudio de Cabezuelo
+## Processing of clinical data to obtain a single data frame to be merged with that of the variants. #
+## Data from the TCGA_CLINICAL_PRAD_DATA.ods file of the Cabezuelo study.                            #
 #####################################################################################################
 
 setwd('~/Documentos/Olavide/TFM/Clinica/')
+# First, reading all the clinical data:
 datos_patient <- read.table('TCGA_CLINICAL_PRAD_DATA_PATIENT.csv', header = T, sep = ',')
 datos_followup <- read.table('TCGA_CLINICAL_PRAD_DATA_FOLLOWUP.csv', header = T, sep = ',')
 datos_drug <- read.table('TCGA_CLINICAL_PRAD_DATA_DRUG.csv', header = T, sep = ',')
@@ -70,7 +73,7 @@ datos_nte <- read.table('TCGA_CLINICAL_PRAD_DATA_NTE.csv', header = T, sep = ','
 datos_radiation <- read.table('TCGA_CLINICAL_PRAD_DATA_RADIATION.csv', header = T, sep = ',')
 datos_v40 <- read.table('TCGA_CLINICAL_PRAD_DATA_V40.csv', header = T, sep = ',')
 
-names(variantes_pacientes)[161] <- "bcr_patient_barcode" # Para poder hacer el merge
+names(variantes_pacientes)[161] <- "bcr_patient_barcode" # Changing this name in order to make the "merge".
 
 datos_global <- merge(x = variantes_pacientes, y = datos_patient, all.x = T)
 datos_global <- merge(x = datos_global, y = datos_followup, all.x = T)
@@ -78,7 +81,8 @@ datos_global <- merge(x = datos_global, y = datos_followup, all.x = T)
 # datos_global <- merge(x = datos_global, y = datos_nte, all.x = T)
 # datos_global <- merge(x = datos_global, y = datos_radiation, all.x = T)
 # datos_global <- merge(x = datos_global, y = datos_v40, all.x = T)
+# Now, correcting some things:
 datos_global[datos_global == '[Not Available]'] <- NA
 datos_global[datos_global == '[Unknown]'] <- NA
-names(datos_global)[15:173] # Éstas son las variables correspondientes a las variantes.
-write.csv2(datos_global, '~/Documentos/Olavide/TFM/datos_global.csv')
+names(datos_global)[15:173] # These columns correspond to the variants.
+write.csv2(datos_global, '~/Documentos/Olavide/TFM/TFM_R/Data/datos_global.csv')
