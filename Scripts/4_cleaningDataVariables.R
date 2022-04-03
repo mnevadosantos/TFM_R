@@ -32,11 +32,11 @@ summary(datos_global$radiation_treatment_adjuvant) # 209 NAs
 summary(datos_global$pharmaceutical_tx_adjuvant) # 208 NAs
 
 # Selecting clinical variables by NAs proportion (<= 10%:
-clinical_var_index <- c(4:14, 175:245) # Clinical variables
+clinical_var_index <- c(4:13, 174:244) # Clinical variables
 sel_clinical_var <- c()
 sel_clinical_index <- c()
 for (index in clinical_var_index) {
-  nas <- nrow(datos_global[is.na(datos_global[index]),])
+  nas <- nrow(datos_global[is.na(datos_global[index]), ])
   if (nas < 50){
     sel_clinical_var <- c(sel_clinical_var, colnames(datos_global[index]))
     sel_clinical_index <- c(sel_clinical_index, index)
@@ -47,3 +47,15 @@ length(sel_clinical_var)
 sapply(sel_clinical_index, function(x){
   summary(datos_global[x])
 })
+
+# Selecting the columns initially considered useful for the study, and eliminating the rest:
+sel_clinical_index <- c(1, sel_clinical_index, 14:172)
+datos_global <- datos_global[sel_clinical_index]
+datos_global[,2] <- NULL
+
+# Dropping useless variables. First,defining which variables will be dropped:
+drop_variables <- c("last_contact_days_to", "death_days_to", "gender", "prospective_collection", "retrospective_collection", 
+                    "history_neoadjuvant_treatment", "initial_pathologic_dx_year", "lymph_nodes_examined", "days_to_initial_pathologic_diagnosis", 
+                    "extranodal_involvement", "icd_10", "icd_o_3_histology", "icd_o_3_site", "informed_consent_verified", "pathologic_M", 
+                    "pathologic_stage", "system_version", "tumor_tissue_site")
+datos_global[colnames(datos_global) %in% drop_variables] <- NULL
