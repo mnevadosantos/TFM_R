@@ -59,3 +59,9 @@ drop_variables <- c("last_contact_days_to", "death_days_to", "gender", "prospect
                     "extranodal_involvement", "icd_10", "icd_o_3_histology", "icd_o_3_site", "informed_consent_verified", "pathologic_M", 
                     "pathologic_stage", "system_version", "tumor_tissue_site")
 datos_global[colnames(datos_global) %in% drop_variables] <- NULL
+
+for (n in 2:178) {
+  print(paste(colnames(datos_global[n]), sep = ": ", nrow(datos_global[is.na(datos_global[n]), ])))
+}
+write.csv2(datos_global, "../Data/datos_global_clean.csv", sep = ";")
+
