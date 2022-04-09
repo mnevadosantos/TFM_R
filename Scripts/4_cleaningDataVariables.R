@@ -63,5 +63,16 @@ datos_global[colnames(datos_global) %in% drop_variables] <- NULL
 for (n in 2:178) {
   print(paste(colnames(datos_global[n]), sep = ": ", nrow(datos_global[is.na(datos_global[n]), ])))
 }
+
+# Creating a new clinical variable: the WHO's grade group:
+datos_global$who[datos_global$gleason_score <= 6] <- 1
+datos_global$who[datos_global$gleason_score == 8] <- 4
+datos_global$who[datos_global$gleason_score > 8] <- 5
+datos_global$who[datos_global$gleason_pattern_primary == 3 & 
+                   datos_global$gleason_pattern_secondary == 4] <- 2
+datos_global$who[datos_global$gleason_pattern_primary == 4 & 
+                   datos_global$gleason_pattern_secondary == 3] <- 3
+
+# Writing data set to a file:
 write.csv2(datos_global, "../Data/datos_global_clean.csv", sep = ";")
 
