@@ -67,5 +67,5 @@ barplot(table(pathologic_T),
 summary(clinical_N)
 summary(clinical_M)
 
-# Initial study will include The age at initial histologic diagnosis, the Gleason score,
+# Initial study will include the age at initial histologic diagnosis, the Gleason score,
 # the WHO's grade group and the pathologic T.
