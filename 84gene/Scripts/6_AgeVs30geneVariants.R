@@ -29,8 +29,8 @@ confint(regback)
 valorpred <- predict.lm(regback, type = "response")
 valpred <- as.data.frame((valorpred))
 names(valpred) <- "pred_age_at_init_patdiag"
-valpred$early[datos_global$age_at_initial_pathologic_diagnosis <= 75] <- 0
-valpred$early[datos_global$age_at_initial_pathologic_diagnosis > 75] <- 1
+valpred$early[datos_global$age_at_initial_pathologic_diagnosis <= 70] <- 0
+valpred$early[datos_global$age_at_initial_pathologic_diagnosis > 70] <- 1
 predicho <- prediction(valpred$pred_age_at_init_patdiag, valpred$early) 
 perf <- performance(predicho, "tpr", "fpr")
 perf1 <- performance(predicho, measure = "acc")
