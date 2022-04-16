@@ -8,7 +8,7 @@ p_load(corrplot, ggplot2, dplyr, tidyr, bootStepAIC, MASS, ROCR, car)
 datos_global <- read.table("../Data/datos_global_clean.csv", header = T,
                            stringsAsFactors = T, sep = ";")
 datos_global$X <- NULL
-dropped_cols <- c(1:11, 13:19, 619)
+dropped_cols <- c(1:13, 15:21, 621)
 datos_global <- datos_global[, -dropped_cols]
 # No missing values:
 sum(datos_global[is.na(datos_global$age_at_initial_pathologic_diagnosis),]) 
@@ -29,8 +29,8 @@ confint(regback)
 valorpred <- predict.lm(regback, type = "response")
 valpred <- as.data.frame((valorpred))
 names(valpred) <- "pred_age_at_init_patdiag"
-valpred$early[datos_global$age_at_initial_pathologic_diagnosis <= 51] <- 0
-valpred$early[datos_global$age_at_initial_pathologic_diagnosis > 51] <- 1
+valpred$early[datos_global$age_at_initial_pathologic_diagnosis <= 75] <- 0
+valpred$early[datos_global$age_at_initial_pathologic_diagnosis > 75] <- 1
 predicho <- prediction(valpred$pred_age_at_init_patdiag, valpred$early) 
 perf <- performance(predicho, "tpr", "fpr")
 perf1 <- performance(predicho, measure = "acc")
