@@ -89,9 +89,5 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
 
 # The model includes 318 variants:
 length(regback$model)
-write.csv2(names(regback$model), file = 'variantes_modelo.csv')
+write.csv2(names(regback$model), file = '../Data/variantes_modelo.csv')
 
-##### Principal component analysis #####
-pca <- prcomp(datos_global, center = T, scale. = T)
-print(pca)
-plot(pca, type = "l")

@@ -84,4 +84,4 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
 
 # The model includes 318 variants:
 length(regstep$model)
-write.csv2(names(regstep$model), file = 'variantes_modelo_step.csv')
+write.csv2(names(regstep$model), file = '../Data/variantes_modelo_step.csv')
