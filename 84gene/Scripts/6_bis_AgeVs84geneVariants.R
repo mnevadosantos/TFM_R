@@ -70,8 +70,8 @@ mosaicplot(tabla_conf, color = "orange", main = 'Model performance')
 ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regstep$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
   theme (text = element_text(size=8)) + # Tamaño de fuente del grafico por defecto
   ggtitle("Age at initial pathological diagnosis", subtitle = "Model with both directions step adjust")  + 
-  theme (plot.title = element_text(family="Comic Sans MS",
-                                   size=rel(3), #Tamaño relativo de la letra del título
+  theme (plot.title = element_text(family="NimbusSan",
+                                   size=rel(2), #Tamaño relativo de la letra del título
                                    vjust=2, #Justificación vertical, para separarlo del gráfico
                                    face="bold", #Letra negrilla. Otras posibilidades "plain", "italic", "bold" y "bold.italic"
                                    color="red", #Color del texto
@@ -82,6 +82,6 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
   theme(axis.title.x = element_text(face="bold", vjust=-0.5, colour="orange", size=rel(1.5))) +
   theme(axis.title.y = element_text(face="bold", vjust=1.5, colour="blue", size=rel(1.5)))
 
-# The model includes 318 variants:
+# The model includes 190 variants:
 length(regstep$model)
 write.csv2(names(regstep$model), file = '../Data/variantes_modelo_step.csv')

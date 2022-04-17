@@ -75,8 +75,8 @@ mosaicplot(tabla_conf, color = "orange", main = 'Model performance')
 ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regback$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
   theme (text = element_text(size=8)) + # Tamaño de fuente del grafico por defecto
   ggtitle("Age at initial pathological diagnosis", subtitle = "Model with backward direction step adjust")  + 
-  theme (plot.title = element_text(family="Comic Sans MS",
-                                   size=rel(3), #Tamaño relativo de la letra del título
+  theme (plot.title = element_text(family="NimbusSan",
+                                   size=rel(2), #Tamaño relativo de la letra del título
                                    vjust=2, #Justificación vertical, para separarlo del gráfico
                                    face="bold", #Letra negrilla. Otras posibilidades "plain", "italic", "bold" y "bold.italic"
                                    color="red", #Color del texto
