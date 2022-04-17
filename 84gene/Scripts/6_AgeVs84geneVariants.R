@@ -74,7 +74,7 @@ mosaicplot(tabla_conf, color = "orange", main = 'Model performance')
 ################################################################################
 ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regback$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
   theme (text = element_text(size=8)) + # Tamaño de fuente del grafico por defecto
-  ggtitle("Age at initial pathological diagnosis")  + 
+  ggtitle("Age at initial pathological diagnosis", subtitle = "Model with backward direction step adjust")  + 
   theme (plot.title = element_text(family="Comic Sans MS",
                                    size=rel(3), #Tamaño relativo de la letra del título
                                    vjust=2, #Justificación vertical, para separarlo del gráfico
@@ -82,7 +82,7 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
                                    color="red", #Color del texto
                                    hjust = 0.5, # Centrado horizontal
                                    lineheight=1.5),
-         panel.background = element_rect(fill = "#BDB76B")) + 
+         panel.background = element_rect(fill = "#D5DEE3")) + 
   labs(x = "Observed values", y = "Predicted values") + 
   theme(axis.title.x = element_text(face="bold", vjust=-0.5, colour="orange", size=rel(1.5))) +
   theme(axis.title.y = element_text(face="bold", vjust=1.5, colour="blue", size=rel(1.5)))
