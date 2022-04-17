@@ -25,6 +25,7 @@ confint(regstep)
 summary(regback)
 confint(regback)
 
+
 # ROC curve:
 valorpred <- predict.lm(regback, type = "response")
 valpred <- as.data.frame((valorpred))
@@ -46,6 +47,31 @@ plot(fitted(regback), rstandard(regback)) # Possible collinearity
 qqnorm(rstandard(regback))
 qqline(rstandard(regback)) # Residuals follow normal distribution.
 
+################################################################################
+##### Confusion matrix #####
+################################################################################
+confusion <- data.frame(datos_global$age_at_initial_pathologic_diagnosis, valpred$pred_age_at_init_patdiag)
+confusion$pred[confusion$valpred.pred_age_at_init_patdiag <= 55] <- 'young'
+confusion$pred[confusion$valpred.pred_age_at_init_patdiag > 55 &
+                 confusion$valpred.pred_age_at_init_patdiag <= 70] <- 'middleage'
+confusion$pred[confusion$valpred.pred_age_at_init_patdiag > 70] <- 'old'
+confusion$pred <- ordered(confusion$pred, levels = c('young', 'middleage', 'old'))
+confusion$real[confusion$datos_global.age_at_initial_pathologic_diagnosis <= 55] <- 'young'
+confusion$real[confusion$datos_global.age_at_initial_pathologic_diagnosis > 55 &
+                 confusion$datos_global.age_at_initial_pathologic_diagnosis <= 70] <- 'middleage'
+confusion$real[confusion$datos_global.age_at_initial_pathologic_diagnosis > 70] <- 'old'
+confusion$real <- ordered(confusion$real, levels = c('young', 'middleage', 'old'))
+tabla_conf <- table(confusion$real, confusion$pred, dnn = c('Real', 'Prediccion'))
+prop.table(tabla_conf)
+round(prop.table(tabla_conf, 1)*100, 2)
+summary(tabla_conf)
+#### Mosaic diagram ####
+barplot(tabla_conf, legend = T, xlab = "Prediction",
+        col = c("grey", "orange", "darkgreen"))
+mosaicplot(tabla_conf, color = "orange", main = 'Model performance')
+################################################################################
+### Model graphics
+################################################################################
 ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regback$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
   theme (text = element_text(size=8)) + # Tamaño de fuente del grafico por defecto
   ggtitle("Age at initial pathological diagnosis")  + 
@@ -64,3 +90,8 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
 # The model includes 318 variants:
 length(regback$model)
 write.csv2(names(regback$model), file = 'variantes_modelo.csv')
+
+##### Principal component analysis #####
+pca <- prcomp(datos_global, center = T, scale. = T)
+print(pca)
+plot(pca, type = "l")
