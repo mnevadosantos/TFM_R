@@ -7,7 +7,6 @@ p_load(corrplot, ggplot2, dplyr, tidyr, bootStepAIC, MASS, ROCR, car)
 
 datos_global <- read.table("../Data/datos_global_clean.csv", header = T,
                            stringsAsFactors = T, sep = ";")
-datos_global$X <- NULL
 dropped_cols <- c(1:13, 15:21, 621)
 datos_global <- datos_global[, -dropped_cols]
 # No missing values:
