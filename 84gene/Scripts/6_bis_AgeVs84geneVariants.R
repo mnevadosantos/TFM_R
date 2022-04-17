@@ -1,3 +1,25 @@
+###########################################################################################################
+##### This script analyzes the variable "age_at_initial_pathologic_diagnosis" in relation to genetic 
+##### variants, using different machine learning methods.
+###########################################################################################################
+if (!require("pacman")) install.packages("pacman")
+p_load(corrplot, ggplot2, dplyr, tidyr, bootStepAIC, MASS, ROCR, car)
+
+datos_global <- read.table("../Data/datos_global_clean.csv", header = T,
+                           stringsAsFactors = T, sep = ";")
+datos_global$X <- NULL
+dropped_cols <- c(1:13, 15:21, 621)
+datos_global <- datos_global[, -dropped_cols]
+
+# Regresion analysis:
+regmod_all <- lm(formula = age_at_initial_pathologic_diagnosis~., datos_global)
+summary(regmod_all)
+regmod_none <- lm(formula = age_at_initial_pathologic_diagnosis~1, datos_global)
+summary(regmod_none)
+regstep <- step(regmod_none, scope = list(lower=regmod_none, upper=regmod_all), direction = "both")
+summary(regstep)
+confint(regstep)
+
 ##### EXPLORING MODEL PERFORMANCE #####
 # ROC curve:
 valorpred <- predict.lm(regstep, type = "response")
