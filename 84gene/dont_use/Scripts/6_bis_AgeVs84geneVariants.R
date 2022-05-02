@@ -1,6 +1,6 @@
 ###########################################################################################################
 ##### This script analyzes the variable "age_at_initial_pathologic_diagnosis" in relation to genetic 
-##### variants, using different machine learning methods.
+##### variants, using different machine learning methods (regresion with step adjust).
 ###########################################################################################################
 if (!require("pacman")) install.packages("pacman")
 p_load(corrplot, ggplot2, dplyr, tidyr, bootStepAIC, MASS, ROCR, car)
@@ -9,24 +9,19 @@ datos_global <- read.table("../Data/datos_global_clean.csv", header = T,
                            stringsAsFactors = T, sep = ";")
 dropped_cols <- c(1:13, 15:21, 621)
 datos_global <- datos_global[, -dropped_cols]
-# No missing values:
-sum(datos_global[is.na(datos_global$age_at_initial_pathologic_diagnosis),]) 
 
 # Regresion analysis:
 regmod_all <- lm(formula = age_at_initial_pathologic_diagnosis~., datos_global)
 summary(regmod_all)
 regmod_none <- lm(formula = age_at_initial_pathologic_diagnosis~1, datos_global)
 summary(regmod_none)
-regback <- step(regmod_all, scope = list(lower=regmod_none, upper=regmod_all), direction = "backward")
 regstep <- step(regmod_none, scope = list(lower=regmod_none, upper=regmod_all), direction = "both")
 summary(regstep)
 confint(regstep)
-summary(regback)
-confint(regback)
 
-
+##### EXPLORING MODEL PERFORMANCE #####
 # ROC curve:
-valorpred <- predict.lm(regback, type = "response")
+valorpred <- predict.lm(regstep, type = "response")
 valpred <- as.data.frame((valorpred))
 names(valpred) <- "pred_age_at_init_patdiag"
 valpred$early[datos_global$age_at_initial_pathologic_diagnosis <= 70] <- 0
@@ -42,9 +37,9 @@ auc <- performance(predicho, "auc")
 cat ( " AUC = " , auc@y.values [[1]] , " \ n " )
 plot(perf1, col = "darkred")
 abline(v = punto_corte, lty = 2)
-plot(fitted(regback), rstandard(regback)) # Possible collinearity
-qqnorm(rstandard(regback))
-qqline(rstandard(regback)) # Residuals follow normal distribution.
+plot(fitted(regstep), rstandard(regstep)) # Possible collinearity
+qqnorm(rstandard(regstep))
+qqline(rstandard(regstep)) # Residuals follow normal distribution.
 
 ################################################################################
 ##### Confusion matrix #####
@@ -71,9 +66,9 @@ mosaicplot(tabla_conf, color = "orange", main = 'Model performance')
 ################################################################################
 ### Model graphics
 ################################################################################
-ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regback$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
+ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = regstep$fitted.values)) + geom_point() + geom_smooth(method = "lm", level = 0.99) +
   theme (text = element_text(size=8)) + # Tamaño de fuente del grafico por defecto
-  ggtitle("Age at initial pathological diagnosis", subtitle = "Model with backward direction step adjust")  + 
+  ggtitle("Age at initial pathological diagnosis", subtitle = "Model with both directions step adjust")  + 
   theme (plot.title = element_text(family="NimbusSan",
                                    size=rel(2), #Tamaño relativo de la letra del título
                                    vjust=2, #Justificación vertical, para separarlo del gráfico
@@ -86,7 +81,6 @@ ggplot(data = datos_global, aes(x = age_at_initial_pathologic_diagnosis, y = reg
   theme(axis.title.x = element_text(face="bold", vjust=-0.5, colour="orange", size=rel(1.5))) +
   theme(axis.title.y = element_text(face="bold", vjust=1.5, colour="blue", size=rel(1.5)))
 
-# The model includes 318 variants:
-length(regback$model)
-write.csv2(names(regback$model), file = '../Data/variantes_modelo.csv')
-
+# The model includes 190 variants:
+length(regstep$model)
+write.csv2(names(regstep$model), file = '../Data/variantes_modelo_step.csv')
