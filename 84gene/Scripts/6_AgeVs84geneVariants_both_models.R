@@ -25,3 +25,5 @@ cv_error_regback <- cv.glm(data = datos_global, glmfit = regback)
 cv_error_regstep <- cv.glm(data = datos_global, glmfit = regstep)
 
 save.image("../Data/both_models.RData")
+
+# Finally, cross valitation error can't be calculated in any of the two models.
